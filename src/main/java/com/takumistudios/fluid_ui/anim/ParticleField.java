@@ -7,6 +7,9 @@ package com.takumistudios.fluid_ui.anim;
 public final class ParticleField {
     private static final float GRAVITY = 30.0F;
     private static final float DRAG = 2.5F;
+    private static final float TWO_PI = (float) (Math.PI * 2.0);
+    /** Radianes por segundo del titileo. */
+    private static final float TWINKLE_SPEED = 18.0F;
 
     private final int capacity;
     private final float[] x;
@@ -17,6 +20,7 @@ public final class ParticleField {
     private final float[] life;
     private final float[] size;
     private final int[] color;
+    private final float[] phase;
     private int count;
     private int seed;
 
@@ -33,6 +37,7 @@ public final class ParticleField {
         this.life = new float[capacity];
         this.size = new float[capacity];
         this.color = new int[capacity];
+        this.phase = new float[capacity];
         this.seed = seed == 0 ? 0x2545F491 : seed;
     }
 
@@ -50,6 +55,7 @@ public final class ParticleField {
         life[i] = lifetime;
         size[i] = particleSize;
         color[i] = rgb & 0xFFFFFF;
+        phase[i] = random() * TWO_PI;
         return true;
     }
 
@@ -83,6 +89,7 @@ public final class ParticleField {
         life[i] = life[last];
         size[i] = size[last];
         color[i] = color[last];
+        phase[i] = phase[last];
     }
 
     public void clear() {
@@ -121,6 +128,11 @@ public final class ParticleField {
 
     public int rgb(int i) {
         return color[i];
+    }
+
+    /** Titileo -1..1: cada partícula tiene su propio desfase para que no parpadeen todas a la vez. */
+    public float twinkle(int i) {
+        return (float) Math.sin(age[i] * TWINKLE_SPEED + phase[i]);
     }
 
     /** Opacidad 0..1: aparece rápido y se desvanece al final de su vida. */

@@ -20,9 +20,10 @@ Archivo: `config/fluid_ui.json`. Se crea con los valores por defecto la primera 
 | `shineInterval` | número | `1.8` | 0.5–10 | Segundos entre destellos mientras el cursor sigue encima. |
 | `carriedWiggle` | sí/no | `true` | — | El ítem del cursor se balancea al moverlo. |
 | `wiggleStrength` | número | `1.0` | 0–3 | Intensidad del balanceo. |
-| `carriedParticles` | sí/no | `true` | — | Estela de partículas para ítems no comunes en el cursor. |
+| `carriedParticles` | sí/no | `true` | — | Estela de estrellitas para ítems no comunes o encantados en el cursor. |
 | `particleDensity` | número | `1.0` | 0–3 | Cantidad de partículas. |
 | `matchingFloat` | sí/no | `true` | — | Los ítems iguales al del cursor flotan. |
+| `smoothItemScaling` | sí/no | `true` | — | Dibuja con filtrado suave los ítems escalados o girados (el ampliado, el del cursor y el "pop" vanilla del hotbar). Sin él se deforman al ampliarse y la animación tiembla. |
 
 Ejemplo con menos movimiento:
 
@@ -40,7 +41,8 @@ Ejemplo con menos movimiento:
   "wiggleStrength": 1.0,
   "carriedParticles": false,
   "particleDensity": 1.0,
-  "matchingFloat": true
+  "matchingFloat": true,
+  "smoothItemScaling": true
 }
 ```
 

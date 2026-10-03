@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- Las partículas del ítem en el cursor ahora son estrellitas de cuatro puntas que titilan, en vez de cuadrados.
+- Los ítems comunes con brillo de encantamiento (libros, herramientas encantadas…) también sueltan estrellitas, en
+  violeta.
+- Corregido: el ítem ampliado al pasar el ratón se veía deformado (unas filas de píxeles más gruesas que otras) y la
+  animación temblaba. Los ítems escalados o girados ahora se dibujan con filtrado suave.
+- Nueva opción `smoothItemScaling` para volver al dibujado píxel a píxel de vanilla.
+
 ## 0.1.1
 
 - Corregido: en Modrinth la 0.1.0 tenía como archivo principal el jar de código fuente (`-sources.jar`), y el launcher

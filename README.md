@@ -15,12 +15,13 @@ servidor lo tenga, y si se pone en un servidor dedicado no se carga ni hace nada
 ## Características
 
 - **Selector del hotbar suave:** al cambiar de slot (rueda o números) el marco se desliza en vez de saltar.
-- **Escala al pasar el ratón:** el ítem bajo el cursor crece con un pequeño rebote y vuelve a su tamaño al salir.
+- **Escala al pasar el ratón:** el ítem bajo el cursor crece con un pequeño rebote y vuelve a su tamaño al salir. Se
+  dibuja con filtrado suave para que no se deforme al ampliarse.
 - **Destello al pasar el ratón** *(nuevo en Fluid UI)*: una franja de luz diagonal cruza el slot nada más poner el
   cursor encima y se repite cada pocos segundos mientras sigas ahí.
 - **Balanceo del ítem en el cursor:** al moverlo rápido por el inventario se inclina con inercia y rebota al pararse.
-- **Estela de partículas por rareza:** los ítems no comunes en el cursor sueltan partículas amarillas (poco común),
-  aguamarina (raro) o magenta (épico); más cuanto más rápido lo mueves.
+- **Estela de estrellitas:** los ítems no comunes o encantados en el cursor sueltan estrellitas que titilan, amarillas
+  (poco común), aguamarina (raro), magenta (épico) o violeta (encantado); más cuanto más rápido lo mueves.
 - **Ítems iguales que flotan:** mientras llevas un ítem, los del contenedor que son iguales se elevan y oscilan.
 
 Todas las animaciones van por tiempo real, no por frames: se ven igual a 30 que a 240 FPS. Cada una se puede desactivar

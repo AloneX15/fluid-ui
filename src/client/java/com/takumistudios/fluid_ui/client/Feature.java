@@ -13,7 +13,8 @@ public enum Feature {
     HOVER_SHINE,
     CARRIED_WIGGLE,
     CARRIED_PARTICLES,
-    MATCHING_FLOAT;
+    MATCHING_FLOAT,
+    SMOOTH_ITEM_SCALING;
 
     private volatile boolean broken;
 
@@ -30,6 +31,7 @@ public enum Feature {
             case CARRIED_WIGGLE -> config.carriedWiggle;
             case CARRIED_PARTICLES -> config.carriedParticles;
             case MATCHING_FLOAT -> config.matchingFloat;
+            case SMOOTH_ITEM_SCALING -> config.smoothItemScaling;
         };
     }
 

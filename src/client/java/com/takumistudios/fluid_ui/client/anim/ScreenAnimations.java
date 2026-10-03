@@ -1,5 +1,6 @@
 package com.takumistudios.fluid_ui.client.anim;
 
+import com.takumistudios.fluid_ui.FluidUI;
 import com.takumistudios.fluid_ui.anim.Easing;
 import com.takumistudios.fluid_ui.anim.ParticleField;
 import com.takumistudios.fluid_ui.anim.ShineTimeline;
@@ -8,6 +9,8 @@ import com.takumistudios.fluid_ui.client.Feature;
 import com.takumistudios.fluid_ui.client.FluidUIClient;
 import com.takumistudios.fluid_ui.config.FluidUIConfig;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -32,6 +35,14 @@ public final class ScreenAnimations {
     private static final float WIGGLE_PER_SPEED = 0.00045F;
     private static final float WIGGLE_MAX = 0.7F;
     private static final int SHINE_ROWS = SLOT_SIZE * 2;
+    /** Violeta del brillo de encantamiento, para ítems comunes encantados. */
+    private static final int ENCHANT_COLOR = 0xC98BFF;
+    private static final Identifier[] SPARKLES = {
+            Identifier.fromNamespaceAndPath(FluidUI.MOD_ID, "sparkle_small"),
+            Identifier.fromNamespaceAndPath(FluidUI.MOD_ID, "sparkle_medium"),
+            Identifier.fromNamespaceAndPath(FluidUI.MOD_ID, "sparkle_large"),
+    };
+    private static final int[] SPARKLE_SIZES = {3, 5, 7};
 
     private long lastNanos;
     private float dt;
@@ -231,7 +242,8 @@ public final class ScreenAnimations {
             return;
         }
         Rarity rarity = carried.getRarity();
-        if (rarity == Rarity.COMMON) {
+        boolean enchanted = carried.hasFoil();
+        if (rarity == Rarity.COMMON && !enchanted) {
             emitBudget = 0.0F;
             return;
         }
@@ -240,14 +252,16 @@ public final class ScreenAnimations {
             case EPIC -> 1.8F;
             default -> 1.0F;
         };
-        // Mismos colores que el nombre del ítem (amarillo, aguamarina, magenta); la API de ChatFormatting cambia entre 26.x
+        // Mismos colores que el nombre del ítem (amarillo, aguamarina, magenta); la API de ChatFormatting cambia entre 26.x.
+        // Un ítem común con brillo de encantamiento (libro, herramienta…) usa el violeta del encantamiento.
         int rgb = switch (rarity) {
             case RARE -> 0x55FFFF;
             case EPIC -> 0xFF55FF;
-            default -> 0xFFFF55;
+            case UNCOMMON -> 0xFFFF55;
+            default -> ENCHANT_COLOR;
         };
         float speed = Math.min((float) Math.sqrt(mouseVX * mouseVX + mouseVY * mouseVY), 2000.0F);
-        emitBudget += (12.0F + speed * 0.05F) * density * rarityBoost * dt;
+        emitBudget += (10.0F + speed * 0.04F) * density * rarityBoost * dt;
         while (emitBudget >= 1.0F) {
             emitBudget -= 1.0F;
             ParticleField p = particles;
@@ -265,6 +279,11 @@ public final class ScreenAnimations {
         }
     }
 
+    /**
+     * Estrellitas de cuatro puntas: sprites blancos de 7, 5 y 3 píxeles teñidos con el color de la partícula. Se dibujan a
+     * media resolución (escala 0.5) y en posiciones enteras, así cada píxel del sprite ocupa píxeles exactos de pantalla
+     * y se ven nítidas. El titileo cambia de tamaño (y de brillo) en vez de escalar el sprite.
+     */
     private void drawParticles(GuiGraphicsExtractor graphics) {
         int count = particles.count();
         if (count == 0) {
@@ -274,14 +293,20 @@ public final class ScreenAnimations {
         pose.pushMatrix();
         pose.scale(0.5F, 0.5F);
         for (int i = 0; i < count; i++) {
-            int alpha = (int) (particles.alpha(i) * 230.0F);
+            float twinkle = particles.twinkle(i);
+            int alpha = (int) (particles.alpha(i) * (200.0F + 55.0F * twinkle));
             if (alpha <= 0) {
                 continue;
             }
-            int x = Math.round(particles.x(i) * 2.0F);
-            int y = Math.round(particles.y(i) * 2.0F);
-            int s = Math.max(1, Math.round(particles.size(i) * 2.0F));
-            graphics.fill(x, y, x + s, y + s, ARGB.color(alpha, particles.rgb(i)));
+            int tier = particles.size(i) > 2.1F ? 2 : particles.size(i) > 1.7F ? 1 : 0;
+            if (twinkle < -0.35F && tier > 0) {
+                tier--;
+            }
+            int spriteSize = SPARKLE_SIZES[tier];
+            int x = Math.round(particles.x(i) * 2.0F) - spriteSize / 2;
+            int y = Math.round(particles.y(i) * 2.0F) - spriteSize / 2;
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPARKLES[tier], x, y, spriteSize, spriteSize,
+                    ARGB.color(alpha, particles.rgb(i)));
         }
         pose.popMatrix();
     }

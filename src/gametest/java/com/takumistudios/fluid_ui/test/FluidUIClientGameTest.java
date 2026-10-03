@@ -6,6 +6,7 @@ import com.takumistudios.fluid_ui.FluidUI;
 import com.takumistudios.fluid_ui.client.Feature;
 import com.takumistudios.fluid_ui.client.anim.AnimatedScreen;
 import com.takumistudios.fluid_ui.client.anim.HotbarAnimations;
+import com.takumistudios.fluid_ui.client.anim.ItemSmoothing;
 import com.takumistudios.fluid_ui.client.anim.ScreenAnimations;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -31,6 +32,7 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
     private static final int SLOT_INVENTORY_0 = 9;
     private static final int SLOT_HOTBAR_0 = 36;
     private static final int SLOT_HOTBAR_1 = 37;
+    private static final int SLOT_HOTBAR_3 = 39;
 
     private static @Nullable Screen currentScreen(Minecraft mc) {
         //? if >=26.2 {
@@ -61,6 +63,8 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
             world.getServer().runCommand("item replace entity @a hotbar.1 with minecraft:enchanted_golden_apple");
             world.getServer().runCommand("item replace entity @a hotbar.2 with minecraft:totem_of_undying");
             world.getServer().runCommand("item replace entity @a inventory.0 with minecraft:diamond 8");
+            // Común pero con brillo de encantamiento: también debe soltar estrellitas
+            world.getServer().runCommand("item replace entity @a hotbar.3 with minecraft:stick[enchantment_glint_override=true]");
             context.waitTicks(10);
 
             testInventory(context);
@@ -87,6 +91,7 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
         context.waitTicks(10);
         float hover = animations(context).hoverProgress(SLOT_HOTBAR_1);
         check(hover > 0.9F, "El ítem bajo el cursor no ha crecido (progreso " + hover + ")");
+        check(ItemSmoothing.smoothedBlits() > 0, "El ítem ampliado no usa filtrado suave (mixin de GuiRenderer)");
         context.takeScreenshot("fluid_ui_hover");
 
         // Coger los diamantes: los del inventario deben flotar y el ítem balancearse al moverlo
@@ -130,11 +135,31 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
         context.waitTick();
         context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
         context.waitTicks(3);
+        checkSparkles(context, SLOT_HOTBAR_3, "un ítem común encantado");
 
         ScreenAnimations animations = animations(context);
         check(animations.slotCalls() > 0, "El mixin de los slots no se ha aplicado");
         check(animations.carriedCalls() > 0, "El mixin del ítem en el cursor no se ha aplicado");
         context.setScreen(() -> null);
+        context.waitTicks(3);
+    }
+
+    /** Coge el ítem del slot, lo mueve un rato comprobando que suelta partículas y lo devuelve a su sitio. */
+    private static void checkSparkles(ClientGameTestContext context, int slotIndex, String what) {
+        moveToSlot(context, slotIndex);
+        context.waitTick();
+        context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+        context.waitTicks(3);
+        int maxParticles = 0;
+        for (int i = 0; i < 10; i++) {
+            context.getInput().moveCursor((i / 2) % 2 == 0 ? 40 : -40, i % 2 == 0 ? -12 : 12);
+            context.waitTick();
+            maxParticles = Math.max(maxParticles, animations(context).particleCount());
+        }
+        check(maxParticles > 0, "No hay partículas con " + what + " en el cursor");
+        moveToSlot(context, slotIndex);
+        context.waitTick();
+        context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
         context.waitTicks(3);
     }
 

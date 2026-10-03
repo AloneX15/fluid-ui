@@ -41,6 +41,12 @@ public final class FluidUIConfig {
     public boolean matchingFloat = true;
 
     /**
+     * Filtrado suave de los ítems escalados o girados (los del cursor, los ampliados y el "pop" vanilla del hotbar). Sin
+     * él, al ampliar un ítem algunas filas de píxeles salen más gruesas que otras y la animación tiembla.
+     */
+    public boolean smoothItemScaling = true;
+
+    /**
      * Corrige los valores fuera de rango o no numéricos.
      *
      * @return {@code true} si había algo que corregir (hay que reescribir el archivo)

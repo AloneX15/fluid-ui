@@ -143,6 +143,24 @@ class AnimationMathTest {
     }
 
     @Test
+    void twinkleStaysInRangeAndVariesBetweenParticles() {
+        ParticleField field = new ParticleField(8, 7);
+        for (int i = 0; i < 8; i++) {
+            field.spawn(0, 0, 0, 0, 1.0F, 1, 0xFFFFFF);
+        }
+        boolean differs = false;
+        for (int step = 0; step < 20; step++) {
+            for (int i = 0; i < field.count(); i++) {
+                float t = field.twinkle(i);
+                assertTrue(t >= -1.0F && t <= 1.0F);
+                differs |= Math.abs(t - field.twinkle(0)) > 0.1F;
+            }
+            field.update(0.02F);
+        }
+        assertTrue(differs, "cada partícula titila con su propio desfase");
+    }
+
+    @Test
     void randomIsDeterministicAndInRange() {
         ParticleField a = new ParticleField(1, 42);
         ParticleField b = new ParticleField(1, 42);
