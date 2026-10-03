@@ -40,6 +40,8 @@ jobs:
             echo "::warning::CHANGELOG.md no tiene sección para $v; se usan notas genéricas"
             echo "Ver CHANGELOG.md." > notes.md
           fi
+          # Las notas de cada release (GitHub, Modrinth y CurseForge) terminan con la autoría
+          { echo; echo "Creado por TakumiStudios."; } >> notes.md
           cat notes.md
 
       - uses: actions/upload-artifact@v7
@@ -150,8 +152,6 @@ jobs:
             echo "Un jar por versión de Minecraft (26.1.2, 26.2 y 26.3). Requiere Fabric Loader y Fabric API."
             echo
             cat notes.md
-            echo
-            echo "Creado por TakumiStudios."
           } > body.md
           prerelease=""
           case "$GITHUB_REF_NAME" in *-*) prerelease="--prerelease" ;; esac
