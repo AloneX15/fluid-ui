@@ -16,6 +16,20 @@ una estela del color de su rareza, crecen y brillan bajo el cursor, y los ítems
 **Solo de cliente:** instálalo solo en tu juego. Funciona en cualquier servidor (vanilla, Fabric, Paper…) sin que el
 servidor lo tenga, y si se pone en un servidor dedicado no se carga ni hace nada.
 
+## Demostración
+
+### Hotbar y nombre del ítem
+
+![Hotbar con una poción seleccionada y su nombre en pantalla](docs/img/demo-hotbar.png)
+
+### Inventario creativo
+
+![Demostración de Fluid UI en la búsqueda del inventario creativo](docs/img/demo-inventario.png)
+
+### Ítems y descripción emergente
+
+![Demostración de Fluid UI con pociones y su descripción emergente](docs/img/demo-pociones.png)
+
 ## Características
 
 - **Selector del hotbar suave:** al cambiar de slot (rueda o números) el marco se desliza en vez de saltar.
