@@ -102,4 +102,10 @@ tasks {
             "Implementation-Vendor" to "TakumiStudios",
         )
     }
+
+    // Sin fabric.mod.json el jar de código fuente no es un mod: si alguien lo pone en mods/ por error, Fabric Loader lo
+    // ignora en vez de fallar al arrancar con "Invalid mod id ${id}" (las propiedades solo se sustituyen en el jar normal)
+    named<Jar>("sourcesJar") {
+        exclude("fabric.mod.json")
+    }
 }

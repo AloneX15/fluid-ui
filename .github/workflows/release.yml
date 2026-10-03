@@ -105,6 +105,20 @@ jobs:
         with:
           name: release-notes
 
+      # mc-publish no respeta las exclusiones "!" de "files": sube también el -sources.jar y Modrinth puede elegirlo
+      # como archivo principal (el launcher instala entonces un jar que no es el mod). Se dejan fuera borrándolos.
+      - name: Keep only the mod jar
+        if: ${{ vars.MODRINTH_ID != '' || vars.CURSEFORGE_ID != '' }}
+        run: |
+          libs="versions/${{ matrix.minecraft }}/build/libs"
+          rm -f "$libs"/*-sources.jar "$libs"/*-api.jar
+          ls -1 "$libs"
+          count="$(find "$libs" -maxdepth 1 -name '*.jar' | wc -l)"
+          if [ "$count" -ne 1 ]; then
+            echo "::error::Se esperaba exactamente un jar en $libs y hay $count"
+            exit 1
+          fi
+
       - name: Publish to Modrinth / CurseForge
         if: ${{ vars.MODRINTH_ID != '' || vars.CURSEFORGE_ID != '' }}
         uses: Kir-Antipov/mc-publish@v3.3
@@ -113,10 +127,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-id: ${{ vars.CURSEFORGE_ID }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          files: |
-            versions/${{ matrix.minecraft }}/build/libs/*.jar
-            !versions/${{ matrix.minecraft }}/build/libs/*-sources.jar
-            !versions/${{ matrix.minecraft }}/build/libs/*-api.jar
+          files: versions/${{ matrix.minecraft }}/build/libs/*.jar
           name: Fluid UI ${{ github.ref_name }} for MC ${{ matrix.minecraft }}
           version: ${{ github.ref_name }}+mc${{ matrix.minecraft }}
           # Tags con guion (v1.0.0-beta.1) salen como beta
