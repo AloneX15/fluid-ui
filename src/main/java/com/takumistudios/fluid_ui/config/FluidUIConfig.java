@@ -17,6 +17,14 @@ public final class FluidUIConfig {
     /** Velocidad del deslizamiento (1–40). */
     public float hotbarSpeed = 18.0F;
 
+    /** El ítem del slot seleccionado en el hotbar crece. */
+    public boolean hotbarItemZoom = true;
+    /** Escala del ítem seleccionado en el hotbar (1.0–1.5). */
+    public float hotbarItemScale = 1.2F;
+
+    /** El nombre del ítem en la mano aparece con un zoom de entrada y se va con un zoom de salida. */
+    public boolean itemNameZoom = true;
+
     /** El ítem bajo el cursor crece con un pequeño rebote. */
     public boolean hoverScale = true;
     /** Escala máxima del ítem bajo el cursor (1.0–1.5). */
@@ -60,6 +68,10 @@ public final class FluidUIConfig {
         v = clamp(hotbarSpeed, 1.0F, 40.0F, defaults.hotbarSpeed);
         changed |= v != hotbarSpeed;
         hotbarSpeed = v;
+
+        v = clamp(hotbarItemScale, 1.0F, 1.5F, defaults.hotbarItemScale);
+        changed |= v != hotbarItemScale;
+        hotbarItemScale = v;
 
         v = clamp(hoverScaleAmount, 1.0F, 1.5F, defaults.hoverScaleAmount);
         changed |= v != hoverScaleAmount;

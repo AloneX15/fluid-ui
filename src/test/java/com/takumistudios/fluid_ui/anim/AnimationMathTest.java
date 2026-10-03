@@ -76,6 +76,19 @@ class AnimationMathTest {
     }
 
     @Test
+    void springSnapStartsFromValueAndPopsToTarget() {
+        Spring spring = new Spring(260.0F, 15.0F);
+        spring.snap(0.6F);
+        assertEquals(0.6F, spring.value());
+        float max = 0.0F;
+        for (int i = 0; i < 120; i++) {
+            max = Math.max(max, spring.update(1.0F, 1.0F / 60.0F));
+        }
+        assertTrue(max > 1.0F, "el nombre se pasa un poco de su tamaño al aparecer");
+        assertEquals(1.0F, spring.value(), 1.0E-3F);
+    }
+
+    @Test
     void springSurvivesHugeFrames() {
         Spring spring = new Spring(170.0F, 11.0F);
         float value = spring.update(1.0F, 30.0F);

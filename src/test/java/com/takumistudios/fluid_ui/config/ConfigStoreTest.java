@@ -69,10 +69,11 @@ class ConfigStoreTest {
     void outOfRangeValuesAreClampedAndRewritten() throws IOException {
         ConfigStore store = store();
         Files.writeString(store.file(), """
-                {"version": 1, "hoverScaleAmount": 9.0, "wiggleStrength": -2, "hotbarSpeed": 0, "particleDensity": 100}
+                {"version": 1, "hotbarItemScale": 0.2, "hoverScaleAmount": 9.0, "wiggleStrength": -2, "hotbarSpeed": 0, "particleDensity": 100}
                 """, StandardCharsets.UTF_8);
 
         FluidUIConfig config = store.load();
+        assertEquals(1.0F, config.hotbarItemScale);
         assertEquals(1.5F, config.hoverScaleAmount);
         assertEquals(0.0F, config.wiggleStrength);
         assertEquals(1.0F, config.hotbarSpeed);

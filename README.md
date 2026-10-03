@@ -15,10 +15,13 @@ servidor lo tenga, y si se pone en un servidor dedicado no se carga ni hace nada
 ## Características
 
 - **Selector del hotbar suave:** al cambiar de slot (rueda o números) el marco se desliza en vez de saltar.
+- **Zoom en el hotbar:** el ítem seleccionado crece con un pequeño rebote.
+- **Nombre del ítem con zoom:** al cambiar de ítem, su nombre aparece con un zoom de entrada y se encoge al
+  desvanecerse.
 - **Escala al pasar el ratón:** el ítem bajo el cursor crece con un pequeño rebote y vuelve a su tamaño al salir. Se
   dibuja con filtrado suave para que no se deforme al ampliarse.
-- **Destello al pasar el ratón** *(nuevo en Fluid UI)*: una franja de luz diagonal cruza el slot nada más poner el
-  cursor encima y se repite cada pocos segundos mientras sigas ahí.
+- **Destello al pasar el ratón** *(nuevo en Fluid UI)*: una franja de luz diagonal cruza el ítem (solo sus píxeles, no
+  el slot) nada más poner el cursor encima y se repite cada pocos segundos mientras sigas ahí.
 - **Balanceo del ítem en el cursor:** al moverlo rápido por el inventario se inclina con inercia y rebota al pararse.
 - **Estela de estrellitas:** los ítems no comunes o encantados en el cursor sueltan estrellitas que titilan, amarillas
   (poco común), aguamarina (raro), magenta (épico) o violeta (encantado); más cuanto más rápido lo mueves.

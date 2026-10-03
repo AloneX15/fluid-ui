@@ -33,6 +33,12 @@ public final class Spring {
         return value;
     }
 
+    /** Coloca el muelle en un valor, parado (p. ej. para que una animación arranque desde ahí). */
+    public void snap(float newValue) {
+        value = newValue;
+        velocity = 0.0F;
+    }
+
     public void reset() {
         value = 0.0F;
         velocity = 0.0F;

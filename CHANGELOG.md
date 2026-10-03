@@ -2,6 +2,9 @@
 
 ## 0.2.0
 
+- Nuevo: el ítem seleccionado en el hotbar crece con un pequeño rebote y vuelve a su tamaño al cambiar de slot.
+- Nuevo: el nombre del ítem en la mano aparece con un zoom de entrada y se encoge mientras se desvanece.
+- Corregido: el destello al pasar el ratón se dibujaba sobre todo el slot; ahora solo ilumina los píxeles del ítem.
 - Las partículas del ítem en el cursor ahora son estrellitas de cuatro puntas que titilan, en vez de cuadrados.
 - Los ítems comunes con brillo de encantamiento (libros, herramientas encantadas…) también sueltan estrellitas, en
   violeta.

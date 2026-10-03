@@ -7,6 +7,7 @@ import com.takumistudios.fluid_ui.anim.ShineTimeline;
 import com.takumistudios.fluid_ui.anim.Spring;
 import com.takumistudios.fluid_ui.client.Feature;
 import com.takumistudios.fluid_ui.client.FluidUIClient;
+import com.takumistudios.fluid_ui.client.render.ShineContext;
 import com.takumistudios.fluid_ui.config.FluidUIConfig;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -34,7 +35,8 @@ public final class ScreenAnimations {
     /** Radianes de giro por cada píxel/segundo de velocidad del ratón. */
     private static final float WIGGLE_PER_SPEED = 0.00045F;
     private static final float WIGGLE_MAX = 0.7F;
-    private static final int SHINE_ROWS = SLOT_SIZE * 2;
+    /** Inclinación de la franja del destello: cuánto (en anchos de ítem) se desplaza de abajo a arriba. */
+    private static final float SHINE_SLANT = 0.45F;
     /** Violeta del brillo de encantamiento, para ítems comunes encantados. */
     private static final int ENCHANT_COLOR = 0xC98BFF;
     private static final Identifier[] SPARKLES = {
@@ -148,47 +150,81 @@ public final class ScreenAnimations {
         return true;
     }
 
-    /** Después de dibujar un slot (aún con su transformación): destello sobre el slot bajo el cursor. */
-    public void afterSlot(GuiGraphicsExtractor graphics, Slot slot, @Nullable Slot hovered) {
-        if (slot != hovered || slot != shineSlot || !slot.hasItem() || !Feature.HOVER_SHINE.active()) {
+    /**
+     * Después de dibujar un slot (aún con su transformación): destello sobre el ítem bajo el cursor.
+     *
+     * @param seed la misma semilla con la que vanilla dibujó el ítem (modelos con variantes aleatorias)
+     */
+    public void afterSlot(GuiGraphicsExtractor graphics, Slot slot, @Nullable Slot hovered, int seed) {
+        if (slot != hovered || slot != shineSlot || !slot.hasItem() || slot.isFake() || !Feature.HOVER_SHINE.active()
+                || !FluidUIClient.shinePipelineReady()) {
             return;
         }
         try {
             float progress = ShineTimeline.progress(shineSeconds, FluidUIClient.config().shineInterval);
             if (progress >= 0.0F) {
-                drawShine(graphics, slot.x, slot.y, progress);
+                drawShine(graphics, slot.getItem(), slot.x, slot.y, seed, progress);
             }
         } catch (RuntimeException e) {
+            ShineContext.end();
             Feature.HOVER_SHINE.fail(e);
         }
     }
 
     /**
-     * Banda diagonal blanca que cruza el slot. Se dibuja a media resolución (escala 0.5) para que se mueva con más
-     * suavidad que a píxeles enteros de GUI: 32 filas con un halo tenue y un núcleo más brillante.
+     * Franja diagonal de luz que cruza el ítem (no el slot). Para cada fila de píxeles de GUI que toca la franja se
+     * recorta con scissor el tramo de la franja y se vuelve a dibujar el ítem marcado como destello: se suma a lo que
+     * ya hay, así solo se aclaran los píxeles del ítem. Dos capas: un halo ancho y tenue y un núcleo estrecho.
      */
-    private static void drawShine(GuiGraphicsExtractor graphics, int x, int y, float progress) {
+    private static void drawShine(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, int seed, float progress) {
         float intensity = ShineTimeline.intensity(progress);
-        int glow = ARGB.white((int) (intensity * 50.0F));
-        int core = ARGB.white((int) (intensity * 120.0F));
-        float base = Easing.lerp(-22.0F, SHINE_ROWS + 4.0F, progress);
-        Matrix3x2fStack pose = graphics.pose();
-        pose.pushMatrix();
-        pose.translate(x, y);
-        pose.scale(0.5F, 0.5F);
-        for (int row = 0; row < SHINE_ROWS; row++) {
-            float center = base + (SHINE_ROWS - 1 - row) * 0.6F;
-            fillRow(graphics, row, center, 5.0F, glow);
-            fillRow(graphics, row, center, 1.8F, core);
+        if (intensity <= 0.01F) {
+            return;
         }
-        pose.popMatrix();
+        // Esquinas del ítem en coordenadas de GUI (la matriz actual ya lleva la posición de la pantalla y la escala)
+        Matrix3x2fStack pose = graphics.pose();
+        float left = pose.m00 * x + pose.m10 * y + pose.m20;
+        float top = pose.m01 * x + pose.m11 * y + pose.m21;
+        float right = pose.m00 * (x + SLOT_SIZE) + pose.m10 * (y + SLOT_SIZE) + pose.m20;
+        float bottom = pose.m01 * (x + SLOT_SIZE) + pose.m11 * (y + SLOT_SIZE) + pose.m21;
+        float width = right - left;
+        float height = bottom - top;
+        if (width <= 0.0F || height <= 0.0F) {
+            return;
+        }
+        // La franja va de abajo a la izquierda hacia arriba a la derecha y cruza de izquierda a derecha
+        float travel = Easing.lerp(-0.6F, 1.6F, progress);
+        drawShineLayer(graphics, stack, x, y, seed, left, top, width, height, travel, 0.20F, intensity * 0.30F);
+        drawShineLayer(graphics, stack, x, y, seed, left, top, width, height, travel, 0.08F, intensity * 0.55F);
     }
 
-    private static void fillRow(GuiGraphicsExtractor graphics, int row, float center, float halfWidth, int color) {
-        int x0 = Math.max(0, Math.round(center - halfWidth));
-        int x1 = Math.min(SHINE_ROWS, Math.round(center + halfWidth));
-        if (x1 > x0) {
-            graphics.fill(x0, row, x1, row + 1, color);
+    private static void drawShineLayer(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, int seed,
+                                       float left, float top, float width, float height,
+                                       float travel, float halfWidth, float strength) {
+        Matrix3x2fStack pose = graphics.pose();
+        int firstRow = (int) Math.floor(top);
+        int lastRow = (int) Math.ceil(top + height);
+        for (int row = firstRow; row < lastRow; row++) {
+            // 0 arriba, 1 abajo: la franja está más a la derecha cuanto más arriba
+            float v = Easing.clamp01((row + 0.5F - top) / height);
+            float center = travel + (1.0F - v) * SHINE_SLANT;
+            int x0 = Math.max((int) Math.floor(left), Math.round(left + (center - halfWidth) * width));
+            int x1 = Math.min((int) Math.ceil(left + width), Math.round(left + (center + halfWidth) * width));
+            if (x1 <= x0) {
+                continue;
+            }
+            // El scissor se da en coordenadas de GUI: se aplica con la matriz identidad y se vuelve a la del ítem
+            pose.pushMatrix();
+            pose.identity();
+            graphics.enableScissor(x0, row, x1, row + 1);
+            pose.popMatrix();
+            ShineContext.begin(strength);
+            try {
+                graphics.item(stack, x, y, seed);
+            } finally {
+                ShineContext.end();
+                graphics.disableScissor();
+            }
         }
     }
 

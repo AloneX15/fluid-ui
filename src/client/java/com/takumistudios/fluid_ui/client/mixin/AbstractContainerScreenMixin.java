@@ -34,6 +34,10 @@ public abstract class AbstractContainerScreenMixin implements AnimatedScreen {
     @Final
     protected AbstractContainerMenu menu;
 
+    @Shadow
+    @Final
+    protected int imageWidth;
+
     @Unique
     private final ScreenAnimations fluid_ui$animations = new ScreenAnimations();
 
@@ -52,7 +56,8 @@ public abstract class AbstractContainerScreenMixin implements AnimatedScreen {
         boolean pushed = fluid_ui$animations.pushSlotTransform(graphics, slot, hoveredSlot, menu.getCarried());
         try {
             original.call(graphics, slot, mouseX, mouseY);
-            fluid_ui$animations.afterSlot(graphics, slot, hoveredSlot);
+            // misma semilla que AbstractContainerScreen#extractSlot
+            fluid_ui$animations.afterSlot(graphics, slot, hoveredSlot, slot.x + slot.y * imageWidth);
         } finally {
             if (pushed) {
                 graphics.pose().popMatrix();

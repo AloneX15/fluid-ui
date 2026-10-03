@@ -5,8 +5,9 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "AbstractContainerScreenMixin",
+    "GuiItemRenderStateMixin",
     "GuiRendererMixin",
-    "HotbarSelectorMixin"
+    "HudMixin"
   ],
   "injectors": {
     "defaultRequire": 0

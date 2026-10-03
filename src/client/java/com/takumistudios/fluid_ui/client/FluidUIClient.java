@@ -1,6 +1,7 @@
 package com.takumistudios.fluid_ui.client;
 
 import com.takumistudios.fluid_ui.FluidUI;
+import com.takumistudios.fluid_ui.client.render.FluidPipelines;
 import com.takumistudios.fluid_ui.config.ConfigStore;
 import com.takumistudios.fluid_ui.config.FluidUIConfig;
 import net.fabricmc.api.ClientModInitializer;
@@ -24,11 +25,19 @@ public final class FluidUIClient implements ClientModInitializer {
 
     private static volatile FluidUIConfig config = new FluidUIConfig();
     private static ConfigStore store;
+    private static boolean shinePipelineReady;
 
     @Override
     public void onInitializeClient() {
         store = new ConfigStore(FabricLoader.getInstance().getConfigDir().resolve(FluidUI.MOD_ID + ".json"), IO);
         config = store.load();
+        try {
+            FluidPipelines.init();
+            shinePipelineReady = true;
+        } catch (RuntimeException | LinkageError e) {
+            // Sin el pipeline no hay destello, ni siquiera tras /fluidui reload (volver a tocar la clase daría otro error)
+            FluidUI.LOGGER.error("No se pudo crear el pipeline del destello; el destello queda desactivado", e);
+        }
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(
                 ClientCommands.literal("fluidui").then(ClientCommands.literal("reload").executes(context -> {
@@ -44,6 +53,11 @@ public final class FluidUIClient implements ClientModInitializer {
                 }))));
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> shutdownIo());
+    }
+
+    /** ¿Se creó el pipeline aditivo del destello? */
+    public static boolean shinePipelineReady() {
+        return shinePipelineReady;
     }
 
     /** Configuración actual, siempre válida. Se puede leer desde cualquier hilo. */

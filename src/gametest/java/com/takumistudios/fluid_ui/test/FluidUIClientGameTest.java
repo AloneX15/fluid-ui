@@ -8,6 +8,7 @@ import com.takumistudios.fluid_ui.client.anim.AnimatedScreen;
 import com.takumistudios.fluid_ui.client.anim.HotbarAnimations;
 import com.takumistudios.fluid_ui.client.anim.ItemSmoothing;
 import com.takumistudios.fluid_ui.client.anim.ScreenAnimations;
+import com.takumistudios.fluid_ui.client.render.ShineContext;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -92,6 +93,7 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
         float hover = animations(context).hoverProgress(SLOT_HOTBAR_1);
         check(hover > 0.9F, "El ítem bajo el cursor no ha crecido (progreso " + hover + ")");
         check(ItemSmoothing.smoothedBlits() > 0, "El ítem ampliado no usa filtrado suave (mixin de GuiRenderer)");
+        check(ShineContext.blits() > 0, "El destello no se ha dibujado sobre el ítem (pipeline aditivo)");
         context.takeScreenshot("fluid_ui_hover");
 
         // Coger los diamantes: los del inventario deben flotar y el ítem balancearse al moverlo
@@ -164,6 +166,25 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
     }
 
     private static void testHotbar(ClientGameTestContext context) {
+        // Seleccionar la manzana (slot 2): el ítem crece y su nombre entra con zoom. Vanilla muestra el nombre unos 40
+        // ticks y lo desvanece en los 10 últimos: a los 10 ticks debe estar a tamaño normal y al terminar, encogido.
+        long nameFramesBefore = HotbarAnimations.nameFrames();
+        long namePopsBefore = HotbarAnimations.namePops();
+        context.getInput().pressKey(options -> options.keyHotbarSlots[1]);
+        context.waitTicks(2);
+        context.takeScreenshot("fluid_ui_hotbar_zoom");
+        context.waitTicks(8);
+        float zoom = HotbarAnimations.slotZoom(1);
+        check(zoom > 0.9F, "El ítem seleccionado en el hotbar no ha crecido (progreso " + zoom + ")");
+        check(HotbarAnimations.slotFrames() > 0, "El mixin del zoom del hotbar no se ha aplicado");
+        check(HotbarAnimations.nameFrames() > nameFramesBefore, "El mixin del zoom del nombre no se ha aplicado");
+        check(HotbarAnimations.namePops() > namePopsBefore, "El nombre no ha hecho el zoom de entrada");
+        float nameScale = HotbarAnimations.currentNameScale();
+        check(Math.abs(nameScale - 1.0F) < 0.05F, "El nombre no ha llegado a su tamaño tras el zoom (escala " + nameScale + ")");
+        context.waitTicks(50);
+        float fadedScale = HotbarAnimations.currentNameScale();
+        check(fadedScale < 0.95F, "El nombre no ha hecho el zoom de salida al desvanecerse (escala " + fadedScale + ")");
+
         long framesBefore = HotbarAnimations.frames();
         context.getInput().pressKey(options -> options.keyHotbarSlots[8]);
         context.waitTick();
@@ -172,6 +193,8 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
         check(HotbarAnimations.frames() > framesBefore, "El mixin del selector del hotbar no se ha aplicado");
         float position = HotbarAnimations.position();
         check(Math.abs(position - 8.0F) < 0.01F, "El selector no ha llegado al slot 9 (posición " + position + ")");
+        float previous = HotbarAnimations.slotZoom(1);
+        check(previous < 0.1F, "El ítem del slot anterior no ha vuelto a su tamaño (progreso " + previous + ")");
     }
 
     private static ScreenAnimations animations(ClientGameTestContext context) {

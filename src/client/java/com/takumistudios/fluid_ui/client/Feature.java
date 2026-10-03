@@ -9,6 +9,8 @@ import com.takumistudios.fluid_ui.config.FluidUIConfig;
  */
 public enum Feature {
     HOTBAR_SELECTOR,
+    HOTBAR_ITEM_ZOOM,
+    ITEM_NAME_ZOOM,
     HOVER_SCALE,
     HOVER_SHINE,
     CARRIED_WIGGLE,
@@ -26,6 +28,8 @@ public enum Feature {
         }
         return switch (this) {
             case HOTBAR_SELECTOR -> config.hotbarSelector;
+            case HOTBAR_ITEM_ZOOM -> config.hotbarItemZoom;
+            case ITEM_NAME_ZOOM -> config.itemNameZoom;
             case HOVER_SCALE -> config.hoverScale;
             case HOVER_SHINE -> config.hoverShine;
             case CARRIED_WIGGLE -> config.carriedWiggle;

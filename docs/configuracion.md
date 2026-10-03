@@ -14,9 +14,12 @@ Archivo: `config/fluid_ui.json`. Se crea con los valores por defecto la primera 
 | `enabled` | sí/no | `true` | — | Interruptor general. En `false` no hay ninguna animación. |
 | `hotbarSelector` | sí/no | `true` | — | El selector del hotbar se desliza. |
 | `hotbarSpeed` | número | `18.0` | 1–40 | Velocidad del deslizamiento. |
+| `hotbarItemZoom` | sí/no | `true` | — | El ítem seleccionado en el hotbar crece. |
+| `hotbarItemScale` | número | `1.2` | 1.0–1.5 | Tamaño del ítem seleccionado (1.2 = 20 % más grande). |
+| `itemNameZoom` | sí/no | `true` | — | El nombre del ítem en la mano entra con zoom y se encoge al desvanecerse. |
 | `hoverScale` | sí/no | `true` | — | El ítem bajo el cursor crece. |
 | `hoverScaleAmount` | número | `1.18` | 1.0–1.5 | Tamaño máximo (1.18 = 18 % más grande). |
-| `hoverShine` | sí/no | `true` | — | Destello diagonal sobre el slot bajo el cursor. |
+| `hoverShine` | sí/no | `true` | — | Destello diagonal sobre el ítem bajo el cursor (solo ilumina sus píxeles). |
 | `shineInterval` | número | `1.8` | 0.5–10 | Segundos entre destellos mientras el cursor sigue encima. |
 | `carriedWiggle` | sí/no | `true` | — | El ítem del cursor se balancea al moverlo. |
 | `wiggleStrength` | número | `1.0` | 0–3 | Intensidad del balanceo. |
@@ -33,6 +36,9 @@ Ejemplo con menos movimiento:
   "enabled": true,
   "hotbarSelector": true,
   "hotbarSpeed": 25.0,
+  "hotbarItemZoom": true,
+  "hotbarItemScale": 1.1,
+  "itemNameZoom": false,
   "hoverScale": true,
   "hoverScaleAmount": 1.1,
   "hoverShine": false,
