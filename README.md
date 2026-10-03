@@ -1,4 +1,8 @@
-# Fluid UI
+<p align="center">
+  <img src="docs/img/icon.png" alt="Icono de Fluid UI" width="128" height="128">
+</p>
+
+<h1 align="center">Fluid UI</h1>
 
 [![Build](https://github.com/AloneX15/fluid-ui/actions/workflows/build.yml/badge.svg)](https://github.com/AloneX15/fluid-ui/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/AloneX15/fluid-ui?sort=semver)](https://github.com/AloneX15/fluid-ui/releases)
@@ -55,6 +59,14 @@ creativo…) y en las de otros mods que usen las pantallas de contenedor de vani
 Archivo `config/fluid_ui.json`, que se crea al arrancar el juego. Tras editarlo, escribe `/fluidui reload` en el chat
 para aplicar los cambios sin reiniciar. Todas las opciones y sus rangos están en
 [docs/configuracion.md](docs/configuracion.md).
+
+## Documentación
+
+- [Guía del mod](docs/guia.md): qué hace cada animación y cómo funciona por dentro.
+- [Configuración](docs/configuracion.md): opciones, rangos y comandos.
+- [Mixins](MIXINS.md): qué toca el mod de Minecraft.
+- [Publicación](docs/publicacion.md) y [registro de errores](docs/registro-de-errores.md).
+- [Changelog](CHANGELOG.md).
 
 Para jugar sin movimiento en la interfaz (accesibilidad), pon `"enabled": false`.
 

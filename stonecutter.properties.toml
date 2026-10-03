@@ -3,7 +3,7 @@
 mod.id = "fluid_ui"
 mod.name = "Fluid UI"
 mod.group = "com.takumistudios.fluid_ui"
-mod.version = "0.2.0"
+mod.version = "0.2.1"
 
 deps.fabric_loader = "0.19.5"
 

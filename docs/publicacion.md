@@ -16,7 +16,7 @@ están los datos de las fichas y la configuración que necesita el repositorio.
 | Categorías | Decoration, Utility (CurseForge: Cosmetic, Miscellaneous) |
 | Código fuente | https://github.com/AloneX15/fluid-ui |
 | Issues | https://github.com/AloneX15/fluid-ui/issues |
-| Icono | `src/main/resources/assets/fluid_ui/icon.png` (pendiente el definitivo) |
+| Icono | `src/main/resources/assets/fluid_ui/icon.png` |
 | Galería | Capturas del test de cliente: artifact `screenshots-mc26.3` de la CI |
 
 ## Descripción (Markdown, en inglés)

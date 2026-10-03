@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- Corregido: el mod no mostraba icono (estaba fuera de la ruta que declara `fabric.mod.json`).
+- Nueva documentación: guía del mod (`docs/guia.md`) y el icono en el README.
+
 ## 0.2.0
 
 - Nuevo: el ítem seleccionado en el hotbar crece con un pequeño rebote y vuelve a su tamaño al cambiar de slot.
