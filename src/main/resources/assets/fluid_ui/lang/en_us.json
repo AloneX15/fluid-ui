@@ -1,0 +1,5 @@
+{
+  "modmenu.descriptionTranslation.fluid_ui": "Client-side animations for the inventory and HUD: smooth hotbar selector, wiggling items with rarity particle trails, hover scaling with a shine sweep, and floating matching items.",
+  "fluid_ui.command.reload.success": "Fluid UI: configuration reloaded.",
+  "fluid_ui.command.reload.failure": "Fluid UI: could not reload the configuration. Check the log."
+}

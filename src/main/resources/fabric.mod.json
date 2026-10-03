@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "Client-side animations for the inventory and HUD: smooth hotbar selector, wiggling items with rarity particle trails, hover scaling with a shine sweep, and floating matching items.",
+  "authors": ["TakumiStudios"],
+  "contact": {
+    "homepage": "https://github.com/AloneX15/fluid-ui",
+    "sources": "https://github.com/AloneX15/fluid-ui",
+    "issues": "https://github.com/AloneX15/fluid-ui/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/fluid_ui/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": ["com.takumistudios.fluid_ui.FluidUI"],
+    "client": ["com.takumistudios.fluid_ui.client.FluidUIClient"]
+  },
+  "mixins": [
+    {
+      "config": "fluid_ui.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader}",
+    "minecraft": "${minecraft}",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

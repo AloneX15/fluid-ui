@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "fluid_ui-test",
+  "version": "1.0.0",
+  "name": "Fluid UI GameTests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": ["com.takumistudios.fluid_ui.test.FluidUIGameTests"],
+    "fabric-client-gametest": ["com.takumistudios.fluid_ui.test.FluidUIClientGameTest"]
+  },
+  "depends": {
+    "fabric-gametest-api-v1": "*"
+  }
+}

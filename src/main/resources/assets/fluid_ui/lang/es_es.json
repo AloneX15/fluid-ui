@@ -1,0 +1,5 @@
+{
+  "modmenu.descriptionTranslation.fluid_ui": "Animaciones de cliente para el inventario y el HUD: selector del hotbar suave, ítems que se balancean con estela de partículas según su rareza, ítems que crecen y brillan bajo el cursor e ítems iguales que flotan.",
+  "fluid_ui.command.reload.success": "Fluid UI: configuración recargada.",
+  "fluid_ui.command.reload.failure": "Fluid UI: no se pudo recargar la configuración. Revisa el log."
+}
