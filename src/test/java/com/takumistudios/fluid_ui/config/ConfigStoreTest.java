@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -104,5 +105,18 @@ class ConfigStoreTest {
     @Test
     void defaultsAreAlreadyValid() {
         assertFalse(new FluidUIConfig().validate());
+    }
+
+    @Test
+    void asyncReadRunsOnIoAndWaitsForPendingSave() throws Exception {
+        try (var io = Executors.newSingleThreadExecutor(r -> new Thread(r, "config-test-io"))) {
+            ConfigStore store = new ConfigStore(dir.resolve("fluid_ui.json"), io);
+            FluidUIConfig config = new FluidUIConfig();
+            config.enabled = false;
+            store.save(config);
+            var loaded = store.loadAsync();
+            assertFalse(loaded.get(5, java.util.concurrent.TimeUnit.SECONDS).enabled);
+            assertEquals("config-test-io", io.submit(() -> Thread.currentThread().getName()).get());
+        }
     }
 }

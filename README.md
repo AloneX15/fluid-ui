@@ -57,15 +57,20 @@ Build de desarrollo (último `main`, ya probado): [release `dev`](https://github
 
 ## Compatibilidad
 
-| Minecraft | Estado |
+| Minecraft (build probada) | Estado |
 |---|---|
-| 26.1.x | ✅ |
-| 26.2.x | ✅ |
-| 26.3.x | ✅ |
+| 26.1.2 | ✅ |
+| 26.2 | ✅ |
+| 26.3 | ✅ |
 
-Probado en la CI junto a Lithium y FerriteCore. Funciona en todas las pantallas con slots (inventario, cofres, hornos,
-creativo…) y en las de otros mods que usen las pantallas de contenedor de vanilla. Los mixins están documentados en
-[MIXINS.md](MIXINS.md). Si encuentras un conflicto con otro mod, abre un
+La matriz de cliente incluye Fluid UI solo, Held Item Info, ItemBorders, ambos juntos y Lithium + FerriteCore.
+Held Item Info conserva sus líneas y fondo animados; los bordes de ItemBorders siguen al objeto ampliado o elevado,
+tanto por encima como por debajo. Las integraciones son opcionales y no requieren cambiar la configuración.
+Consulta las versiones exactas y las pruebas en [Compatibilidad](docs/compatibilidad.md).
+
+Se prueban inventario, cofres e inventario creativo. Las pantallas de otros mods que hereden el dibujo de slots de
+vanilla pueden aprovechar las animaciones; las que reemplazan ese dibujo necesitan validación específica.
+Los mixins están documentados en [MIXINS.md](MIXINS.md). Si encuentras un conflicto, abre un
 [issue](https://github.com/AloneX15/fluid-ui/issues).
 
 ## Configuración
@@ -78,6 +83,7 @@ para aplicar los cambios sin reiniciar. Todas las opciones y sus rangos están e
 
 - [Guía del mod](docs/guia.md): qué hace cada animación y cómo funciona por dentro.
 - [Configuración](docs/configuracion.md): opciones, rangos y comandos.
+- [Compatibilidad y pruebas](docs/compatibilidad.md).
 - [Mixins](MIXINS.md): qué toca el mod de Minecraft.
 - [Publicación](docs/publicacion.md) y [registro de errores](docs/registro-de-errores.md).
 - [Changelog](CHANGELOG.md).

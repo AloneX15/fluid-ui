@@ -3,9 +3,11 @@ package com.takumistudios.fluid_ui.client.mixin;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.takumistudios.fluid_ui.client.anim.AnimatedScreen;
 import com.takumistudios.fluid_ui.client.anim.ScreenAnimations;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.util.Util;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -56,13 +58,21 @@ public abstract class AbstractContainerScreenMixin implements AnimatedScreen {
         boolean pushed = fluid_ui$animations.pushSlotTransform(graphics, slot, hoveredSlot, menu.getCarried());
         try {
             original.call(graphics, slot, mouseX, mouseY);
-            // misma semilla que AbstractContainerScreen#extractSlot
-            fluid_ui$animations.afterSlot(graphics, slot, hoveredSlot, slot.x + slot.y * imageWidth);
         } finally {
             if (pushed) {
                 graphics.pose().popMatrix();
             }
         }
+    }
+
+    /** Shine before AFTER-decoration injections, so ItemBorders' foreground remains above it. */
+    @WrapOperation(method = "extractSlot", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;itemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V"))
+    private void fluid_ui$shineBeforeForeground(GuiGraphicsExtractor graphics, Font font, ItemStack item,
+                                                int x, int y, @Nullable String count, Operation<Void> original,
+                                                @Local(argsOnly = true) Slot slot) {
+        original.call(graphics, font, item, x, y, count);
+        fluid_ui$animations.afterSlot(graphics, slot, hoveredSlot, slot.x + slot.y * imageWidth);
     }
 
     @Inject(method = "extractCarriedItem", at = @At("HEAD"))

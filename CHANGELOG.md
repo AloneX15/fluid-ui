@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0
+
+- Compatibilidad con Held Item Info: zoom conjunto de todas las líneas y el fondo, respetando sus opciones de posición y espaciado.
+- Destello colocado antes de los bordes superiores de ItemBorders para respetar `overItems`.
+- Pruebas de render con ItemBorders: bordes alineados con el zoom y la flotación, con ambas posiciones de `overItems`.
+- Perfiles de cliente independientes y combinados para los tres destinos de Minecraft.
+- Lectura y recarga de configuración en el executor de E/S; el comando confirma cuando la nueva configuración está aplicada.
+- El zoom del nombre se reinicia también al cambiar rápidamente entre objetos con el mismo temporizador.
+- Restauración de matrices y recortes ante errores de dibujo; estado del hotbar reiniciado al desconectar.
+- Pruebas de regresión de geometría, partículas, cofres e inventario creativo.
+
 ## 0.2.1
 
 - Corregido: el mod no mostraba icono (estaba fuera de la ruta que declara `fabric.mod.json`).

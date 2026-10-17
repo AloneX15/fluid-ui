@@ -4,6 +4,9 @@ import com.takumistudios.fluid_ui.anim.Easing;
 import com.takumistudios.fluid_ui.anim.Spring;
 import com.takumistudios.fluid_ui.client.Feature;
 import com.takumistudios.fluid_ui.client.FluidUIClient;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.Arrays;
 
 /**
  * Animaciones del HUD: deslizamiento del selector del hotbar, zoom del ítem seleccionado y zoom de entrada y salida del
@@ -35,8 +38,21 @@ public final class HotbarAnimations {
     private static int lastNameTimer;
     private static long nameFrames;
     private static long namePops;
+    private static ItemStack nameItem = ItemStack.EMPTY;
 
     private HotbarAnimations() {
+    }
+
+    /** No animation state may carry over to a different connection/world. */
+    public static void reset() {
+        position = Float.NaN;
+        lastNanos = 0L;
+        Arrays.fill(SLOT_ZOOM, 0.0F);
+        Arrays.fill(SLOT_NANOS, 0L);
+        NAME_SCALE.snap(1.0F);
+        nameNanos = 0L;
+        lastNameTimer = 0;
+        nameItem = ItemStack.EMPTY;
     }
 
     /**
@@ -83,8 +99,12 @@ public final class HotbarAnimations {
      * @param timer {@code toolHighlightTimer} de vanilla, en ticks
      * @return escala del nombre (1 = tamaño normal)
      */
-    public static float nameScale(int timer, long nanos) {
+    public static float nameScale(int timer, long nanos, ItemStack item) {
         nameFrames++;
+        boolean changed = !ItemStack.isSameItemSameComponents(nameItem, item);
+        if (changed) {
+            nameItem = item.copy();
+        }
         float dt = nameNanos == 0L ? 0.0F : (nanos - nameNanos) / 1.0E9F;
         nameNanos = nanos;
         if (!Feature.ITEM_NAME_ZOOM.active()) {
@@ -92,7 +112,7 @@ public final class HotbarAnimations {
             lastNameTimer = timer;
             return 1.0F;
         }
-        if (timer > lastNameTimer || dt > SNAP_AFTER_SECONDS) {
+        if (changed || timer > lastNameTimer || dt > SNAP_AFTER_SECONDS) {
             NAME_SCALE.snap(NAME_START_SCALE);
             namePops++;
         }

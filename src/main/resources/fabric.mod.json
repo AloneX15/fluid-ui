@@ -23,6 +23,10 @@
       "environment": "client"
     }
   ],
+  "suggests": {
+    "held-item-info": "*",
+    "itemborders": "*"
+  },
   "depends": {
     "fabricloader": ">=${loader}",
     "minecraft": "${minecraft}",

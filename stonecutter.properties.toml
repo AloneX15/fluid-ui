@@ -3,11 +3,15 @@
 mod.id = "fluid_ui"
 mod.name = "Fluid UI"
 mod.group = "com.takumistudios.fluid_ui"
-mod.version = "0.2.1"
+mod.version = "0.3.0"
 
 deps.fabric_loader = "0.19.5"
 
 ["26.1.2"]
+compat.helditeminfo = "y0E8nNgF"
+compat.itemborders = "92aVs1np"
+compat.iceberg = "UujfCDsB"
+compat.prism = "uxupbyjR"
 mod.mc_compat = ">=26.1 <26.2-"
 mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
 deps.fabric_api = "0.155.3+26.1.2"
@@ -15,6 +19,10 @@ compat.lithium = "mc26.1.2-0.24.7-fabric"
 compat.ferritecore = "9.0.0-fabric"
 
 ["26.2"]
+compat.helditeminfo = "bNAT9H23"
+compat.itemborders = "aSAkzGkZ"
+compat.iceberg = "c69GepxX"
+compat.prism = "aqZytbKT"
 mod.mc_compat = "~26.2"
 mod.mc_releases = ["26.2"]
 deps.fabric_api = "0.161.0+26.2"
@@ -22,6 +30,10 @@ compat.lithium = "mc26.2-0.25.3-fabric"
 compat.ferritecore = "9.0.0-fabric"
 
 ["26.3"]
+compat.helditeminfo = "4rTrB3O6"
+compat.itemborders = "pVZMoGZS"
+compat.iceberg = "zhVGUJyW"
+compat.prism = "ETN2U7Rc"
 mod.mc_compat = "~26.3"
 mod.mc_releases = ["26.3"]
 deps.fabric_api = "0.161.0+26.3"

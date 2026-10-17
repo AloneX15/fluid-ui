@@ -57,3 +57,7 @@ Ejemplo con menos movimiento:
 | Comando | Qué hace |
 |---|---|
 | `/fluidui reload` | Vuelve a leer `config/fluid_ui.json` y reactiva las animaciones desactivadas por errores. Es un comando de cliente: funciona en cualquier servidor y no necesita permisos. |
+
+La carga y recarga se realizan en el executor de E/S. El mensaje de éxito aparece cuando la configuración ya se
+ha aplicado en el cliente. Con Held Item Info, `itemNameZoom` controla el bloque completo, incluido su fondo;
+las opciones de ese mod se conservan. ItemBorders conserva sus propias opciones y sigue la transformación de Fluid UI.

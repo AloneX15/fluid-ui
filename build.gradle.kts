@@ -52,8 +52,19 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${sc.properties.get<String>("deps.fabric_loader")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${sc.properties.get<String>("deps.fabric_api")}")
 
-    // Integraciones opcionales: compileOnly aquí + FabricLoader.isModLoaded(...) en ejecución
-    // compileOnly("maven.modrinth:<slug>:${sc.properties.get<String>("compat.<slug>")}")
+    // IDs Fabric: los números de versión se repiten entre loaders en Modrinth.
+    compileOnly("maven.modrinth:held-item-info:${sc.properties.get<String>("compat.helditeminfo")}")
+    add("gametestCompileOnly", "maven.modrinth:held-item-info:${sc.properties.get<String>("compat.helditeminfo")}")
+    val uiCompat = providers.gradleProperty("uiCompat").getOrElse("none")
+    require(uiCompat in setOf("none", "held", "borders", "both")) { "uiCompat: none, held, borders o both" }
+    if (uiCompat == "held" || uiCompat == "both") {
+        localRuntime("maven.modrinth:held-item-info:${sc.properties.get<String>("compat.helditeminfo")}")
+    }
+    if (uiCompat == "borders" || uiCompat == "both") {
+        localRuntime("maven.modrinth:item-borders:${sc.properties.get<String>("compat.itemborders")}")
+        localRuntime("maven.modrinth:iceberg:${sc.properties.get<String>("compat.iceberg")}")
+        localRuntime("maven.modrinth:prism-lib:${sc.properties.get<String>("compat.prism")}")
+    }
 
     // Modpack de compatibilidad (va en la CI): ./gradlew :26.3:runGameTest -PcompatPack
     if (project.hasProperty("compatPack")) {

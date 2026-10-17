@@ -73,7 +73,7 @@ public final class ScreenAnimations {
 
     /** Al principio de cada frame de la pantalla. */
     public void beginFrame(long nanos) {
-        dt = lastNanos == 0L ? 0.0F : Math.min((nanos - lastNanos) / 1.0E9F, MAX_DT);
+        dt = lastNanos == 0L ? 0.0F : Math.max(0.0F, Math.min((nanos - lastNanos) / 1.0E9F, MAX_DT));
         lastNanos = nanos;
         time += dt;
         frames++;
@@ -215,9 +215,12 @@ public final class ScreenAnimations {
             }
             // El scissor se da en coordenadas de GUI: se aplica con la matriz identidad y se vuelve a la del ítem
             pose.pushMatrix();
-            pose.identity();
-            graphics.enableScissor(x0, row, x1, row + 1);
-            pose.popMatrix();
+            try {
+                pose.identity();
+                graphics.enableScissor(x0, row, x1, row + 1);
+            } finally {
+                pose.popMatrix();
+            }
             ShineContext.begin(strength);
             try {
                 graphics.item(stack, x, y, seed);
@@ -327,24 +330,27 @@ public final class ScreenAnimations {
         }
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
-        pose.scale(0.5F, 0.5F);
-        for (int i = 0; i < count; i++) {
-            float twinkle = particles.twinkle(i);
-            int alpha = (int) (particles.alpha(i) * (200.0F + 55.0F * twinkle));
-            if (alpha <= 0) {
-                continue;
+        try {
+            pose.scale(0.5F, 0.5F);
+            for (int i = 0; i < count; i++) {
+                float twinkle = particles.twinkle(i);
+                int alpha = (int) (particles.alpha(i) * (200.0F + 55.0F * twinkle));
+                if (alpha <= 0) {
+                    continue;
+                }
+                int tier = particles.size(i) > 2.1F ? 2 : particles.size(i) > 1.7F ? 1 : 0;
+                if (twinkle < -0.35F && tier > 0) {
+                    tier--;
+                }
+                int spriteSize = SPARKLE_SIZES[tier];
+                int x = Math.round(particles.x(i) * 2.0F) - spriteSize / 2;
+                int y = Math.round(particles.y(i) * 2.0F) - spriteSize / 2;
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPARKLES[tier], x, y, spriteSize, spriteSize,
+                        ARGB.color(alpha, particles.rgb(i)));
             }
-            int tier = particles.size(i) > 2.1F ? 2 : particles.size(i) > 1.7F ? 1 : 0;
-            if (twinkle < -0.35F && tier > 0) {
-                tier--;
-            }
-            int spriteSize = SPARKLE_SIZES[tier];
-            int x = Math.round(particles.x(i) * 2.0F) - spriteSize / 2;
-            int y = Math.round(particles.y(i) * 2.0F) - spriteSize / 2;
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPARKLES[tier], x, y, spriteSize, spriteSize,
-                    ARGB.color(alpha, particles.rgb(i)));
+        } finally {
+            pose.popMatrix();
         }
-        pose.popMatrix();
     }
 
     /**

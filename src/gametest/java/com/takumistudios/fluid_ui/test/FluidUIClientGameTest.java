@@ -17,6 +17,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
@@ -70,11 +76,56 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
 
             testInventory(context);
             testHotbar(context);
+            if (FabricLoader.getInstance().isModLoaded("held-item-info")) {
+                HeldInfoChecks.run(context, world);
+            }
+            testOtherScreens(context, world);
+            for (Feature feature : Feature.values()) {
+                check(!feature.broken(), "La animación " + feature + " falló antes de inyectar el error de prueba");
+            }
+            context.runOnClient(mc -> {
+                try {
+                    RenderChecks.particleFailure(mc);
+                    RenderChecks.rapidNameChanges();
+                } catch (ReflectiveOperationException e) {
+                    throw new AssertionError(e);
+                }
+            });
 
             for (Feature feature : Feature.values()) {
                 check(!feature.broken(), "La animación " + feature + " se desactivó por un error (ver log)");
             }
         }
+        context.runOnClient(mc -> {
+            check(Float.isNaN(HotbarAnimations.position()), "El selector conserva estado tras desconectar");
+            check(HotbarAnimations.currentNameScale() == 1.0F, "El nombre conserva escala tras desconectar");
+        });
+    }
+
+    private static void testOtherScreens(ClientGameTestContext context, TestSingleplayerContext world) {
+        context.setScreen(() -> {
+            Minecraft mc = Minecraft.getInstance();
+            SimpleContainer chest = new SimpleContainer(54);
+            chest.setItem(0, new ItemStack(Items.ENCHANTED_GOLDEN_APPLE));
+            return new ContainerScreen(ChestMenu.sixRows(0, mc.player.getInventory(), chest),
+                    mc.player.getInventory(), Component.translatable("container.chest"));
+        });
+        context.waitForScreen(ContainerScreen.class);
+        moveToSlot(context, 0);
+        context.waitTicks(10);
+        check(animations(context).hoverProgress(0) > 0.8F, "El hover no funciona en cofres");
+        context.takeScreenshot("fluid_ui_chest");
+        context.setScreen(() -> null);
+        world.getServer().runCommand("gamemode creative @a");
+        context.waitTicks(5);
+        context.getInput().pressKey(options -> options.keyInventory);
+        context.waitForScreen(CreativeModeInventoryScreen.class);
+        context.waitTicks(5);
+        check(animations(context).slotCalls() > 0, "No se dibujan slots en creativo");
+        context.takeScreenshot("fluid_ui_creative");
+        context.setScreen(() -> null);
+        world.getServer().runCommand("gamemode survival @a");
+        context.waitTicks(5);
     }
 
     private static void testInventory(ClientGameTestContext context) {
@@ -142,6 +193,19 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
         ScreenAnimations animations = animations(context);
         check(animations.slotCalls() > 0, "El mixin de los slots no se ha aplicado");
         check(animations.carriedCalls() > 0, "El mixin del ítem en el cursor no se ha aplicado");
+        if (FabricLoader.getInstance().isModLoaded("itemborders")) {
+            moveToSlot(context, SLOT_HOTBAR_1);
+            context.waitTicks(10);
+            context.runOnClient(mc -> {
+                AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) currentScreen(mc);
+                try {
+                    RenderChecks.borders(mc, screen, screen.getMenu().slots.get(SLOT_HOTBAR_1));
+                } catch (ReflectiveOperationException e) {
+                    throw new AssertionError(e);
+                }
+            });
+            context.takeScreenshot("fluid_ui_borders_hover");
+        }
         context.setScreen(() -> null);
         context.waitTicks(3);
     }

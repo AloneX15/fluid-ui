@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "name": "Fluid UI GameTests",
   "environment": "*",
+  "mixins": [{"config": "fluid_ui.test.mixins.json", "environment": "client"}],
   "entrypoints": {
     "fabric-gametest": ["com.takumistudios.fluid_ui.test.FluidUIGameTests"],
     "fabric-client-gametest": ["com.takumistudios.fluid_ui.test.FluidUIClientGameTest"]

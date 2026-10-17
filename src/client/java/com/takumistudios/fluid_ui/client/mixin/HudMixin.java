@@ -5,6 +5,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.takumistudios.fluid_ui.client.Feature;
 import com.takumistudios.fluid_ui.client.anim.HotbarAnimations;
+import com.takumistudios.fluid_ui.client.compat.HeldItemInfoCompat;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -44,6 +46,8 @@ public abstract class HudMixin {
     /** Altura de la línea del nombre: se escala alrededor de su centro. */
     @Unique
     private static final float FLUID_UI$TEXT_HALF_HEIGHT = 4.5F;
+    @Unique
+    private static final boolean FLUID_UI$HELD_ITEM_INFO = FabricLoader.getInstance().isModLoaded("held-item-info");
 
     //? if >=26.3 {
     @Unique
@@ -58,6 +62,8 @@ public abstract class HudMixin {
 
     @Shadow
     private int toolHighlightTimer;
+    @Shadow
+    private ItemStack lastToolHighlight;
 
     /** Desplaza el sprite {@code hud/hotbar_selection}; el resto de sprites pasan sin tocar. */
     @WrapOperation(method = "extractItemHotbar", at = @At(value = "INVOKE", target = BLIT_SPRITE))
@@ -127,9 +133,13 @@ public abstract class HudMixin {
     private void fluid_ui$zoomItemName(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y,
                                        int width, int color, Operation<Void> original) {
         float scale = 1.0F;
+        float cy = y + FLUID_UI$TEXT_HALF_HEIGHT;
         try {
-            scale = HotbarAnimations.nameScale(toolHighlightTimer, Util.getNanos());
-        } catch (RuntimeException e) {
+            scale = HotbarAnimations.nameScale(toolHighlightTimer, Util.getNanos(), lastToolHighlight);
+            if (FLUID_UI$HELD_ITEM_INFO && Feature.ITEM_NAME_ZOOM.active()) {
+                cy = HeldItemInfoCompat.centerY(this, y);
+            }
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
             Feature.ITEM_NAME_ZOOM.fail(e);
             scale = 1.0F;
         }
@@ -138,8 +148,7 @@ public abstract class HudMixin {
             original.call(graphics, font, text, x, y, width, color);
             return;
         }
-        float cx = x + width / 2.0F;
-        float cy = y + FLUID_UI$TEXT_HALF_HEIGHT;
+        float cx = FLUID_UI$HELD_ITEM_INFO ? graphics.guiWidth() / 2.0F : x + width / 2.0F;
         graphics.pose().pushMatrix();
         try {
             graphics.pose().translate(cx, cy);

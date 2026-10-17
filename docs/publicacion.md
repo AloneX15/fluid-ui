@@ -17,7 +17,7 @@ están los datos de las fichas y la configuración que necesita el repositorio.
 | Código fuente | https://github.com/AloneX15/fluid-ui |
 | Issues | https://github.com/AloneX15/fluid-ui/issues |
 | Icono | `src/main/resources/assets/fluid_ui/icon.png` |
-| Galería | Capturas del test de cliente: artifact `screenshots-mc26.3` de la CI |
+| Galería | Capturas del test de cliente: artifacts `screenshots-mc26.3-<perfil>` de la CI |
 
 ## Descripción (Markdown, en inglés)
 
@@ -30,20 +30,29 @@ play on any server.
 ## Features
 
 - **Sliding hotbar selector**: the selection frame glides between slots instead of jumping.
+- **Selected hotbar item zoom**: the selected item grows with a small bounce.
+- **Held item text zoom**: the name, or the complete Held Item Info block, animates on entry and fade-out.
 - **Hover scaling**: the item under your cursor grows with a little bounce.
-- **Hover shine** *(new)*: a diagonal light sweep crosses the slot you point at, repeating every few seconds.
+- **Hover shine**: a diagonal light sweep crosses the visible pixels of the item you point at, repeating every few seconds.
 - **Carried item wiggle**: items held on the cursor tilt with inertia when you move them quickly.
 - **Rarity particle trails**: uncommon, rare and epic items leave yellow, aqua or magenta sparkles behind them.
 - **Floating matches**: while you carry an item, identical items in the container float up.
 
 All animations are time-based, so they look the same at 30 or 240 FPS. Each one can be turned off in
-`config/fluid_ui.json` (reload in game with `/fluidui reload`). If one of them ever conflicts with another mod, it
-disables itself and the game keeps running.
+`config/fluid_ui.json` (reload in game with `/fluidui reload`). Runtime errors in guarded animations disable the affected feature and are recorded in the log.
 
 ## Compatibility
 
-Minecraft 26.1.x, 26.2.x and 26.3.x with Fabric Loader and Fabric API. Works in every vanilla-style container screen
-(inventory, chests, furnaces, creative...). Tested with Lithium and FerriteCore.
+Build targets: Minecraft 26.1.2, 26.2 and 26.3, with Fabric Loader and Fabric API.
+
+Optional compatibility: Held Item Info 1.9.1 / 1.9.2 / 1.9.3 and ItemBorders 1.3.1 / 1.3.2 / 1.3.3, respectively.
+Held Item Info keeps its text, spacing and background, animated as a single block. ItemBorders follows animated
+items in the inventory and hotbar, with borders above or below items. Install ItemBorders with its required Iceberg
+and Prism dependencies. Neither integration is required to use Fluid UI.
+
+Client tests cover each mod separately, both together, vanilla inventory, chests and creative inventory.
+A separate profile covers Lithium and FerriteCore. Compatibility applies to the tested versions; custom screens
+that replace vanilla slot rendering need their own validation.
 
 ## Credits
 

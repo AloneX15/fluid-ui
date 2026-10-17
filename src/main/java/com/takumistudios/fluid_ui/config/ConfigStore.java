@@ -34,6 +34,11 @@ public final class ConfigStore {
         return file;
     }
 
+    /** Serializes reads with pending saves on the same I/O executor. */
+    public CompletableFuture<FluidUIConfig> loadAsync() {
+        return CompletableFuture.supplyAsync(this::load, io);
+    }
+
     /** Siempre devuelve una configuración válida, aunque el archivo no exista o esté roto. */
     public FluidUIConfig load() {
         if (!Files.isRegularFile(file)) {

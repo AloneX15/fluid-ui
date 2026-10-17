@@ -2,16 +2,20 @@ package com.takumistudios.fluid_ui.client;
 
 import com.takumistudios.fluid_ui.FluidUI;
 import com.takumistudios.fluid_ui.client.render.FluidPipelines;
+import com.takumistudios.fluid_ui.client.anim.HotbarAnimations;
 import com.takumistudios.fluid_ui.config.ConfigStore;
 import com.takumistudios.fluid_ui.config.FluidUIConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +34,10 @@ public final class FluidUIClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         store = new ConfigStore(FabricLoader.getInstance().getConfigDir().resolve(FluidUI.MOD_ID + ".json"), IO);
-        config = store.load();
+        reload().exceptionally(error -> {
+            FluidUI.LOGGER.error("No se pudo cargar la configuración; se mantienen los valores por defecto", error);
+            return null;
+        });
         try {
             FluidPipelines.init();
             shinePipelineReady = true;
@@ -42,8 +49,14 @@ public final class FluidUIClient implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(
                 ClientCommands.literal("fluidui").then(ClientCommands.literal("reload").executes(context -> {
                     try {
-                        reload();
-                        context.getSource().sendFeedback(Component.translatable("fluid_ui.command.reload.success"));
+                        reload().whenComplete((ignored, error) -> Minecraft.getInstance().execute(() -> {
+                            if (error == null) {
+                                context.getSource().sendFeedback(Component.translatable("fluid_ui.command.reload.success"));
+                            } else {
+                                FluidUI.LOGGER.error("No se pudo recargar la configuración", error);
+                                context.getSource().sendError(Component.translatable("fluid_ui.command.reload.failure"));
+                            }
+                        }));
                         return 1;
                     } catch (RuntimeException e) {
                         FluidUI.LOGGER.error("No se pudo recargar la configuración", e);
@@ -53,6 +66,7 @@ public final class FluidUIClient implements ClientModInitializer {
                 }))));
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> shutdownIo());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> HotbarAnimations.reset());
     }
 
     /** ¿Se creó el pipeline aditivo del destello? */
@@ -66,11 +80,14 @@ public final class FluidUIClient implements ClientModInitializer {
     }
 
     /** Vuelve a leer el archivo y reactiva las animaciones que se hubieran desactivado por un error. */
-    public static void reload() {
-        if (store != null) {
-            config = store.load();
+    public static CompletableFuture<Void> reload() {
+        if (store == null) {
+            return CompletableFuture.completedFuture(null);
         }
-        Feature.resetAll();
+        return store.loadAsync().thenAcceptAsync(loaded -> {
+            config = loaded;
+            Feature.resetAll();
+        }, Minecraft.getInstance()::execute);
     }
 
     private static void shutdownIo() {
