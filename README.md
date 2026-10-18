@@ -18,17 +18,28 @@ servidor lo tenga, y si se pone en un servidor dedicado no se carga ni hace nada
 
 ## Demostración
 
-### Hotbar y nombre del ítem
+### Selector del hotbar y zoom del nombre
 
-![Hotbar con una poción seleccionada y su nombre en pantalla](docs/img/demo-hotbar.png)
+![Selector del hotbar deslizándose entre ítems y zoom de su nombre](docs/img/demo-hotbar.gif)
 
-### Inventario creativo
+### Zoom y destello al pasar el cursor
 
-![Demostración de Fluid UI en la búsqueda del inventario creativo](docs/img/demo-inventario.png)
+![Ítems que crecen y brillan al pasar el cursor, con ItemBorders](docs/img/demo-hover.gif)
 
-### Ítems y descripción emergente
+### Balanceo y partículas
 
-![Demostración de Fluid UI con pociones y su descripción emergente](docs/img/demo-pociones.png)
+![Manzana encantada moviéndose por el inventario con balanceo y estela de partículas](docs/img/demo-particulas.gif)
+
+### Capturas
+
+![Inventario con Fluid UI e ItemBorders](docs/img/captura-inventario.png)
+
+![Hotbar con el ítem seleccionado ampliado y su nombre](docs/img/captura-hotbar.png)
+
+![Zoom sobre un ítem en un cofre con ItemBorders](docs/img/captura-cofre.png)
+
+Material capturado dentro de Minecraft 26.3 con Held Item Info e ItemBorders. Los GIFs están recortados para destacar
+los efectos y optimizados para las fichas de Modrinth y CurseForge.
 
 ## Características
 
@@ -63,9 +74,21 @@ Build de desarrollo (último `main`, ya probado): [release `dev`](https://github
 | 26.2 | ✅ |
 | 26.3 | ✅ |
 
-La matriz de cliente incluye Fluid UI solo, Held Item Info, ItemBorders, ambos juntos y Lithium + FerriteCore.
-Held Item Info conserva sus líneas y fondo animados; los bordes de ItemBorders siguen al objeto ampliado o elevado,
-tanto por encima como por debajo. Las integraciones son opcionales y no requieren cambiar la configuración.
+**Compatible con Held Item Info, ItemBorders, Lithium y FerriteCore** en los perfiles de cliente probados.
+
+- **Held Item Info:** sus líneas, espaciado y fondo se animan como un bloque completo.
+- **ItemBorders:** sus bordes siguen al objeto ampliado o elevado en el inventario y el hotbar, tanto por encima como
+  por debajo. Instálalo con sus dependencias **Iceberg** y **Prism**.
+- **Lithium y FerriteCore:** probados juntos en el perfil de rendimiento.
+
+| Minecraft | Held Item Info | ItemBorders |
+|---|---|---|
+| 26.1.2 | 1.9.1 | 1.3.1 |
+| 26.2 | 1.9.2 | 1.3.2 |
+| 26.3 | 1.9.3 | 1.3.3 |
+
+Las integraciones son opcionales y no requieren cambiar la configuración. La matriz de cliente prueba Fluid UI
+solo, Held Item Info e ItemBorders por separado y juntos, y Lithium + FerriteCore en un perfil independiente.
 Consulta las versiones exactas y las pruebas en [Compatibilidad](docs/compatibilidad.md).
 
 Se prueban inventario, cofres e inventario creativo. Las pantallas de otros mods que hereden el dibujo de slots de

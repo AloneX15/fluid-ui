@@ -80,6 +80,9 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
                 HeldInfoChecks.run(context, world);
             }
             testOtherScreens(context, world);
+            if ("1".equals(System.getenv("FLUID_UI_CAPTURE"))) {
+                captureMedia(context, world);
+            }
             for (Feature feature : Feature.values()) {
                 check(!feature.broken(), "La animación " + feature + " falló antes de inyectar el error de prueba");
             }
@@ -100,6 +103,47 @@ public class FluidUIClientGameTest implements FabricClientGameTest {
             check(Float.isNaN(HotbarAnimations.position()), "El selector conserva estado tras desconectar");
             check(HotbarAnimations.currentNameScale() == 1.0F, "El nombre conserva escala tras desconectar");
         });
+    }
+
+    /** Optional real gameplay frames for documentation; normal CI does not record these sequences. */
+    private static void captureMedia(ClientGameTestContext context, TestSingleplayerContext world) {
+        world.getServer().runCommand("gamerule send_command_feedback false");
+        world.getServer().runCommand("item replace entity @a hotbar.0 with minecraft:diamond 16");
+        context.waitTicks(220); // Let chat and advancement notifications disappear.
+        context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
+        context.waitForScreen(InventoryScreen.class);
+        moveToSlot(context, SLOT_HOTBAR_0);
+        context.waitTicks(10);
+        for (int frame = 0; frame < 48; frame++) {
+            if (frame % 16 == 0) {
+                moveToSlot(context, (frame / 16) % 2 == 0 ? SLOT_HOTBAR_1 : SLOT_HOTBAR_0);
+            }
+            context.waitTick();
+            context.takeScreenshot("media_hover_" + String.format(java.util.Locale.ROOT, "%03d", frame));
+        }
+        moveToSlot(context, SLOT_HOTBAR_1);
+        context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+        context.waitTicks(3);
+        for (int frame = 0; frame < 48; frame++) {
+            double angle = frame * Math.PI / 12.0;
+            moveToSlot(context, SLOT_HOTBAR_1);
+            context.getInput().moveCursor(Math.cos(angle) * 110, -65 + Math.sin(angle) * 45);
+            context.waitTick();
+            context.takeScreenshot("media_particles_" + String.format(java.util.Locale.ROOT, "%03d", frame));
+        }
+        moveToSlot(context, SLOT_HOTBAR_1);
+        context.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
+        context.waitTicks(3);
+        context.takeScreenshot("media_inventory");
+        context.setScreen(() -> null);
+        for (int frame = 0; frame < 64; frame++) {
+            if (frame % 16 == 0) {
+                int slot = new int[]{0, 1, 2, 0}[frame / 16];
+                context.getInput().pressKey(options -> options.keyHotbarSlots[slot]);
+            }
+            context.waitTick();
+            context.takeScreenshot("media_hotbar_" + String.format(java.util.Locale.ROOT, "%03d", frame));
+        }
     }
 
     private static void testOtherScreens(ClientGameTestContext context, TestSingleplayerContext world) {

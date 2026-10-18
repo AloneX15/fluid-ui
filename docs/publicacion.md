@@ -9,7 +9,7 @@ están los datos de las fichas y la configuración que necesita el repositorio.
 |---|---|
 | Nombre | Fluid UI |
 | Slug / URL | `fluid-ui` |
-| Resumen (Modrinth, máx. 256) | Client-side animations for your inventory and HUD: sliding hotbar selector, wiggling items with rarity particle trails, hover scaling with a shine sweep and floating matching items. |
+| Resumen (Modrinth, máx. 256) | Smooth inventory and HUD animations: sliding hotbar, item wiggle, rarity trails, hover zoom and shine. Compatible with Held Item Info, ItemBorders, Lithium and FerriteCore. Client-side only. |
 | Licencia | MIT |
 | Lado | Cliente: **obligatorio**. Servidor: **no compatible / no necesario** |
 | Loader | Fabric (requiere Fabric API) |
@@ -17,15 +17,42 @@ están los datos de las fichas y la configuración que necesita el repositorio.
 | Código fuente | https://github.com/AloneX15/fluid-ui |
 | Issues | https://github.com/AloneX15/fluid-ui/issues |
 | Icono | `src/main/resources/assets/fluid_ui/icon.png` |
-| Galería | Capturas del test de cliente: artifacts `screenshots-mc26.3-<perfil>` de la CI |
+| Galería | GIFs `docs/img/demo-*.gif` y capturas optimizadas `docs/img/captura-*.png` (véase «Recursos visuales») |
 
 ## Descripción (Markdown, en inglés)
+
+Texto común para las fichas de **Modrinth y CurseForge**. Las compatibilidades indicadas corresponden a las pruebas
+documentadas en [Compatibilidad](compatibilidad.md).
 
 ```markdown
 # Fluid UI
 
 Smooth, lightweight animations for the Minecraft inventory and HUD. **Client-side only**: install it on your game and
 play on any server.
+
+## See it in action
+
+### Sliding hotbar and item name zoom
+
+![Sliding hotbar selector and item name zoom](https://raw.githubusercontent.com/AloneX15/fluid-ui/main/docs/img/demo-hotbar.gif)
+
+### Hover zoom and shine
+
+![Hover scaling and shine with ItemBorders](https://raw.githubusercontent.com/AloneX15/fluid-ui/main/docs/img/demo-hover.gif)
+
+### Item wiggle and particle trails
+
+![Carried item wiggle and rarity particle trails](https://raw.githubusercontent.com/AloneX15/fluid-ui/main/docs/img/demo-particulas.gif)
+
+Captured in Minecraft 26.3 with Held Item Info and ItemBorders installed.
+
+### Screenshots
+
+![Inventory with Fluid UI and ItemBorders](https://raw.githubusercontent.com/AloneX15/fluid-ui/main/docs/img/captura-inventario.png)
+
+![Selected hotbar item and animated name](https://raw.githubusercontent.com/AloneX15/fluid-ui/main/docs/img/captura-hotbar.png)
+
+![Hover scaling inside a chest with ItemBorders](https://raw.githubusercontent.com/AloneX15/fluid-ui/main/docs/img/captura-cofre.png)
 
 ## Features
 
@@ -45,10 +72,20 @@ All animations are time-based, so they look the same at 30 or 240 FPS. Each one 
 
 Build targets: Minecraft 26.1.2, 26.2 and 26.3, with Fabric Loader and Fabric API.
 
-Optional compatibility: Held Item Info 1.9.1 / 1.9.2 / 1.9.3 and ItemBorders 1.3.1 / 1.3.2 / 1.3.3, respectively.
-Held Item Info keeps its text, spacing and background, animated as a single block. ItemBorders follows animated
-items in the inventory and hotbar, with borders above or below items. Install ItemBorders with its required Iceberg
-and Prism dependencies. Neither integration is required to use Fluid UI.
+**Compatible with Held Item Info, ItemBorders, Lithium and FerriteCore** in the tested client profiles.
+
+- **Held Item Info:** keeps its text, spacing and background, animated as a single block.
+- **ItemBorders:** borders follow animated items in the inventory and hotbar, whether drawn above or below items.
+  Install ItemBorders with its required **Iceberg** and **Prism** dependencies.
+- **Lithium and FerriteCore:** tested together in a separate performance profile.
+
+| Minecraft | Held Item Info | ItemBorders |
+|---|---|---|
+| 26.1.2 | 1.9.1 | 1.3.1 |
+| 26.2 | 1.9.2 | 1.3.2 |
+| 26.3 | 1.9.3 | 1.3.3 |
+
+All of these mods are optional; none is required to use Fluid UI.
 
 Client tests cover each mod separately, both together, vanilla inventory, chests and creative inventory.
 A separate profile covers Lithium and FerriteCore. Compatibility applies to the tested versions; custom screens
@@ -60,6 +97,44 @@ Inspired by the ideas of Immersive UI by Octo Studios. Fluid UI is an independen
 Minecraft 26.x and contains no code or assets from that mod.
 
 Created by **TakumiStudios**.
+```
+
+## Recursos visuales
+
+Vista previa de los GIFs listos para las descripciones:
+
+![Selector del hotbar](img/demo-hotbar.gif)
+
+![Zoom y destello](img/demo-hover.gif)
+
+![Balanceo y partículas](img/demo-particulas.gif)
+
+| Archivo en `docs/img/` | Dimensiones | Peso aproximado | Uso |
+|---|---|---|---|
+| `demo-hotbar.gif` | 495 × 190 | 94 KiB | Selector y nombre del ítem |
+| `demo-hover.gif` | 375 × 335 | 71 KiB | Zoom y destello |
+| `demo-particulas.gif` | 450 × 345 | 145 KiB | Balanceo y estela |
+| `captura-inventario.png` | 854 × 480 | 59 KiB | Inventario e ItemBorders |
+| `captura-hotbar.png` | 854 × 480 | 130 KiB | Hotbar y Held Item Info |
+| `captura-cofre.png` | 854 × 480 | 59 KiB | Cofre e ItemBorders |
+
+Los seis archivos suman aproximadamente **556 KiB**. Los GIFs usan una paleta compartida de 128 colores, sin
+tramado, fotogramas de 80 ms y compresión de las zonas que cambian. Las capturas PNG conservan sus colores y se
+comprimen sin pérdida. Son capturas reales del juego; no se han generado ni simulado los efectos.
+
+La descripción incluye URLs HTTPS absolutas para que las imágenes se carguen fuera de GitHub. Deben existir en
+la rama `main` antes de copiar el texto a Modrinth o CurseForge. Si el editor de la plataforma usa texto enriquecido,
+inserta las mismas URLs con su herramienta de imagen. Para la galería, usa los PNG; los GIFs se incluyen en la
+descripción. Los pesos indicados son objetivos de este proyecto, no límites oficiales de las plataformas.
+
+Para regenerar el material (Java 25 y Python con Pillow):
+
+```powershell
+$env:FLUID_UI_CAPTURE = '1'
+.\gradlew.bat :26.3:runClientGameTest -PuiCompat=both
+Remove-Item Env:FLUID_UI_CAPTURE
+py -m pip install Pillow
+py scripts/build-media.py
 ```
 
 ## Configuración del repositorio
